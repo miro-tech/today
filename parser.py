@@ -19,8 +19,8 @@ BASE = os.environ.get(
     "https://core.todayvpn.app/api/v1"
 ).rstrip("/")
 
-SERVERS_OUT = "servers.json"
-VLESS_OUT = "vless.txt"
+SERVERS_OUT = "today.json"
+VLESS_OUT = "today.txt"
 SYNC_OUT = "sync.json"
 
 OS_TYPE = "Android"
