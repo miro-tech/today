@@ -1,0 +1,89 @@
+name: Update TodayVPN
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run parser
+        env:
+          BASE: ${{ secrets.BASE }}
+        run: |
+          python parser.py
+
+      - name: Update Gist
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+        run: |
+          python - <<'PY'
+          import os
+          import requests
+
+          token = os.environ["GIST_TOKEN"]
+          gist_id = os.environ["GIST_ID"]
+
+          files = {}
+
+          for filename in [
+              "servers.json",
+              "vless.txt",
+              "sync.json"
+          ]:
+              if os.path.exists(filename):
+                  with open(filename, "r", encoding="utf-8") as f:
+                      files[filename] = {
+                          "content": f.read()
+                      }
+
+          if not files:
+              raise RuntimeError("No output files found")
+
+          url = f"https://api.github.com/gists/{gist_id}"
+
+          headers = {
+              "Authorization": f"Bearer {token}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+
+          response = requests.patch(
+              url,
+              headers=headers,
+              json={
+                  "files": files
+              },
+              timeout=30,
+          )
+
+          print("HTTP:", response.status_code)
+
+          if not response.ok:
+              print(response.text)
+
+          response.raise_for_status()
+
+          print("Gist updated successfully")
+          PY
