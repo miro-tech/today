@@ -48,8 +48,8 @@ jobs:
           files = {}
 
           for filename in [
-              "servers.json",
-              "vless.txt",
+              "today.json",
+              "today.txt",
               "sync.json"
           ]:
               if os.path.exists(filename):
