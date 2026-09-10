@@ -21,7 +21,7 @@ BASE = os.environ.get(
 
 SERVERS_OUT = "today.json"
 VLESS_OUT = "today.txt"
-SYNC_OUT = "sync.json"
+SYNC_OUT = "todaysync.json"
 
 OS_TYPE = "Android"
 OS_VERSION = "16"
