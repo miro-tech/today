@@ -50,7 +50,7 @@ jobs:
           for filename in [
               "today.json",
               "today.txt",
-              "sync.json"
+              "todaysync.json"
           ]:
               if os.path.exists(filename):
                   with open(filename, "r", encoding="utf-8") as f:
